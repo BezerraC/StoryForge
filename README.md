@@ -7,7 +7,7 @@ StoryForge is an interactive storytelling engine developed in Python.
 
 StoryForge allows users to create and play their own interactive stories. Players can make decisions that affect the course of the story, providing an engaging and personalized experience.
 
-[Click here to view the documentation](https://github.com/BezerraC/StoryForge/docs/_build/html/index.html)
+[Click here to view the documentation](https://storyforge.readthedocs.io/en/latest/)
 
 ## Features
 
