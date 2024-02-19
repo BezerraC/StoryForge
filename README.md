@@ -1,4 +1,4 @@
-![StoryForge Banner](https://github.com/BezerraC/StoryForge/docs/StoryForge.png)
+![StoryForge Banner](https://raw.githubusercontent.com/BezerraC/StoryForge/main/docs/StoryForge.png)
 # StoryForge
 
 StoryForge is an interactive storytelling engine developed in Python.
