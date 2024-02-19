@@ -1,0 +1,83 @@
+{
+    "current_scene": "start",
+    "character_name": null,
+    "scenes": {
+        "start": {
+            "text": "Voc\u00ea acorda em um quarto misterioso.",
+            "image": "room.jpg",
+            "character_image": "boy.png",
+            "character_speech": "Onde estou?",
+            "choices": [
+                [
+                    "Ir pela porta",
+                    "door_scene"
+                ],
+                [
+                    "Olhar pela janela",
+                    "window_scene"
+                ]
+            ]
+        },
+        "door_scene": {
+            "text": "Voc\u00ea encontra um corredor.",
+            "image": "corredor.jpg",
+            "character_image": null,
+            "character_speech": "O que eu fa\u00e7o?",
+            "choices": [
+                [
+                    "Ir pro jardim",
+                    "window_scene"
+                ],
+                [
+                    "Olhar pela janela",
+                    "window_scene"
+                ]
+            ]
+        },
+        "window_scene": {
+            "text": "Voc\u00ea v\u00ea um jardim l\u00e1 embaixo.",
+            "image": "jardim.jpg",
+            "character_image": "boy.png",
+            "character_speech": "Que lugar \u00e9 esse?",
+            "choices": [
+                [
+                    "Ir pra biblioteca",
+                    "lib_scene"
+                ],
+                [
+                    "Ir pro quintal",
+                    "outside_scene"
+                ]
+            ]
+        },
+        "outside_scene": {
+            "text": "Voc\u00ea sai de casa.",
+            "image": "outside.jpg",
+            "character_image": null,
+            "character_speech": "Bora sair",
+            "choices": []
+        },
+        "lib_scene": {
+            "text": "Voc\u00ea vai at\u00e9 a biblioteca.",
+            "image": "biblioteca.jpg",
+            "character_image": null,
+            "character_speech": "Bora ali",
+            "choices": []
+        },
+        "room_scene": {
+            "text": "Voc\u00ea vai at\u00e9 a sala.",
+            "image": "room.jpg",
+            "character_image": null,
+            "character_speech": "Sala boa",
+            "choices": []
+        }
+    },
+    "choices": {
+        "('start', 'Ir pela porta')": "door_scene",
+        "('start', 'Olhar pela janela')": "window_scene",
+        "('door_scene', 'Ir pro jardim')": "window_scene",
+        "('door_scene', 'Olhar pela janela')": "window_scene",
+        "('window_scene', 'Ir pra biblioteca')": "lib_scene",
+        "('window_scene', 'Ir pro quintal')": "outside_scene"
+    }
+}

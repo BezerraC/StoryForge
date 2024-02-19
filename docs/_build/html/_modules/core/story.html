@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>core.story &mdash; StoryForge Documentation 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            StoryForge Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">StoryForge</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">StoryForge Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">core.story</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for core.story</h1><div class="highlight"><pre>
+<span></span><span class="c1"># core/story.py</span>
+
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">pygame</span>
+
+<span class="n">IMAGE_DIR</span> <span class="o">=</span> <span class="s2">&quot;images/character&quot;</span>
+
+<div class="viewcode-block" id="Story">
+<a class="viewcode-back" href="../../core.html#core.story.Story">[docs]</a>
+<span class="k">class</span> <span class="nc">Story</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class responsible for manipulating the game&#39;s story.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        - scenes (Dict[str, Dict[str, Union[str, List[Tuple[str, str]]]]]): A dictionary that contains the game&#39;s scenes.</span>
+<span class="sd">        - choices (Dict[Tuple[str, str], str]): A dictionary that maps choices made by the player for upcoming scenes.</span>
+<span class="sd">        - current_scene (str): The name of the current scene.</span>
+<span class="sd">        - character (Dict[str, Optional[str]]): A dictionary that contains information about the character, such as name.</span>
+<span class="sd">        - default_player_name (Dict[str, str]): A dictionary containing the player&#39;s default name.</span>
+
+<span class="sd">    Methods:</span>
+<span class="sd">        - save_state(): Saves the current state of the game in a JSON file.</span>
+<span class="sd">        - load_state() -&gt; bool: Loads the previously saved state, if it exists.</span>
+<span class="sd">        - create_empty_state(): Creates an empty state to start the game.</span>
+<span class="sd">        - set_character_name(name: str): Sets the character&#39;s name.</span>
+<span class="sd">        - add_scene(name: str, text: str, image: Optional[str] = None, character_image: Optional[str] = None, character_speech: Optional[str] = None):</span>
+<span class="sd">            Adds a new scene to the story.</span>
+<span class="sd">        - add_choice(from_scene: str, text: str, to_scene: str): Adds a choice that the player can make in a given scene.</span>
+<span class="sd">        - has_choices() -&gt; bool: Checks if there are choices available in the current scene.</span>
+<span class="sd">        - validate_story(): Validates the consistency of the story, looking for inaccessible scenes.</span>
+<span class="sd">        - run(): Runs the main game loop, showing the scenes, available options and processing the player&#39;s choices.</span>
+<span class="sd">        - show_scene(): Displays the current game scene to standard output.</span>
+<span class="sd">        - show_choices(): Displays the options available to the player on standard output.</span>
+<span class="sd">        - make_choice(player_choice: str): Processes the player&#39;s choice and advances to the next corresponding scene.</span>
+<span class="sd">     &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_scene</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">choices</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_scene</span> <span class="o">=</span> <span class="n">start_scene</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">character</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">character_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_player_name</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;BezerraC&quot;</span><span class="p">}</span>
+
+<div class="viewcode-block" id="Story.save_state">
+<a class="viewcode-back" href="../../core.html#core.story.Story.save_state">[docs]</a>
+    <span class="k">def</span> <span class="nf">save_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves the current game state to a JSON file.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saving state...&quot;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;current_scene&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_scene</span><span class="p">,</span>
+            <span class="s2">&quot;character_name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">character</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="p">}</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;story_state.json&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saved state.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Story.load_state">
+<a class="viewcode-back" href="../../core.html#core.story.Story.load_state">[docs]</a>
+    <span class="k">def</span> <span class="nf">load_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads the previously saved state, if it exists.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            bool: True if the state was loaded successfully, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;story_state.json&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">current_scene</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;current_scene&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="s2">&quot;character_name&quot;</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">character</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;character_name&quot;</span><span class="p">]</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="Story.create_empty_state">
+<a class="viewcode-back" href="../../core.html#core.story.Story.create_empty_state">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_empty_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates an empty state to start the game.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Creating empty state...&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Creates an empty initial state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_scene</span> <span class="o">=</span> <span class="s2">&quot;start&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">character</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Call save_state to create story_state.json file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_state</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Empty state created.&quot;</span><span class="p">)</span></div>
+
+        
+<div class="viewcode-block" id="Story.set_character_name">
+<a class="viewcode-back" href="../../core.html#core.story.Story.set_character_name">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_character_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the character&#39;s name.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            - name (str): The character&#39;s name.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">character</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span></div>
+
+
+<div class="viewcode-block" id="Story.add_scene">
+<a class="viewcode-back" href="../../core.html#core.story.Story.add_scene">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_scene</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">character_image</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">character_speech</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a new scene to the story.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            - name (str): The name of the scene.</span>
+<span class="sd">            - text (str): The text of the scene.</span>
+<span class="sd">            - image (Optional[str]): The name of the scene&#39;s image file.</span>
+<span class="sd">            - character_image (Optional[str]): The name of the character image file in the scene.</span>
+<span class="sd">            - character_speech (Optional[str]): The character&#39;s speech in the scene.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenes</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">text</span><span class="p">,</span> <span class="s2">&quot;image&quot;</span><span class="p">:</span> <span class="n">image</span><span class="p">,</span> <span class="s2">&quot;character_image&quot;</span><span class="p">:</span> <span class="n">character_image</span><span class="p">,</span> <span class="s2">&quot;character_speech&quot;</span><span class="p">:</span> <span class="n">character_speech</span><span class="p">,</span> <span class="s2">&quot;choices&quot;</span><span class="p">:</span> <span class="p">[]}</span></div>
+
+
+<div class="viewcode-block" id="Story.add_choice">
+<a class="viewcode-back" href="../../core.html#core.story.Story.add_choice">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_choice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_scene</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">to_scene</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a choice the player can make in a given scene.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            - from_scene (str): The name of the source scene of the choice.</span>
+<span class="sd">            - text (str): The text of the choice.</span>
+<span class="sd">            - to_scene (str): The name of the scene the choice leads to.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">choices</span><span class="p">[(</span><span class="n">from_scene</span><span class="p">,</span> <span class="n">text</span><span class="p">)]</span> <span class="o">=</span> <span class="n">to_scene</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenes</span><span class="p">[</span><span class="n">from_scene</span><span class="p">][</span><span class="s2">&quot;choices&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">text</span><span class="p">,</span> <span class="n">to_scene</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Story.has_choices">
+<a class="viewcode-back" href="../../core.html#core.story.Story.has_choices">[docs]</a>
+    <span class="k">def</span> <span class="nf">has_choices</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks whether there are choices available in the current scene.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            bool: True if choices are available, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current_scene</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_scene</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">current_scene</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;choices&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Story.validate_story">
+<a class="viewcode-back" href="../../core.html#core.story.Story.validate_story">[docs]</a>
+    <span class="k">def</span> <span class="nf">validate_story</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validates the consistency of the story by looking for inaccessible scenes.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">inaccessible_scenes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scenes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">choices</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_scene</span> <span class="ow">in</span> <span class="n">inaccessible_scenes</span><span class="p">:</span>
+            <span class="n">inaccessible_scenes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_scene</span><span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">scene_name</span> <span class="ow">in</span> <span class="n">inaccessible_scenes</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: Inaccessible scene &#39;</span><span class="si">{</span><span class="n">scene_name</span><span class="si">}</span><span class="s2">&#39;.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Story.run">
+<a class="viewcode-back" href="../../core.html#core.story.Story.run">[docs]</a>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs the main game loop, showing the scenes, available options and processing the player&#39;s choices.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+         <span class="c1"># Loads the saved state, if it exists</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_state</span><span class="p">():</span>
+            <span class="c1"># If it doesn&#39;t exist, it creates an empty state</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">create_empty_state</span><span class="p">()</span>
+        
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_scene</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_scene</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_choices</span><span class="p">()</span>
+            <span class="n">player_choice</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Choose an option: &quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">make_choice</span><span class="p">(</span><span class="n">player_choice</span><span class="p">)</span>
+        <span class="c1"># Call save_state before exiting the game</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_state</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Story.show_scene">
+<a class="viewcode-back" href="../../core.html#core.story.Story.show_scene">[docs]</a>
+    <span class="k">def</span> <span class="nf">show_scene</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Displays the current game scene to standard output.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">scene</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_scene</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">scene</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">])</span>
+        
+        <span class="k">if</span> <span class="n">scene</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Showing background image:&quot;</span><span class="p">,</span> <span class="n">scene</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">])</span>
+        
+        <span class="k">if</span> <span class="n">scene</span><span class="p">[</span><span class="s2">&quot;character_image&quot;</span><span class="p">]:</span>
+            <span class="n">character_image</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">IMAGE_DIR</span><span class="p">,</span> <span class="n">scene</span><span class="p">[</span><span class="s2">&quot;character_image&quot;</span><span class="p">]))</span>
+            <span class="n">character_rect</span> <span class="o">=</span> <span class="n">character_image</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_width</span><span class="p">()</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_height</span><span class="p">()</span> <span class="o">//</span> <span class="mf">0.8</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">character_image</span><span class="p">,</span> <span class="n">character_rect</span><span class="p">)</span>
+            
+        <span class="k">if</span> <span class="n">scene</span><span class="p">[</span><span class="s2">&quot;character_speech&quot;</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">character</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">scene</span><span class="p">[</span><span class="s1">&#39;character_speech&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Story.show_choices">
+<a class="viewcode-back" href="../../core.html#core.story.Story.show_choices">[docs]</a>
+    <span class="k">def</span> <span class="nf">show_choices</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Displays the options available to the player on standard output.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">choice_text</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_scene</span><span class="p">][</span><span class="s2">&quot;choices&quot;</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">choice_text</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Story.make_choice">
+<a class="viewcode-back" href="../../core.html#core.story.Story.make_choice">[docs]</a>
+    <span class="k">def</span> <span class="nf">make_choice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">player_choice</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Processes the player&#39;s choice and advances to the next corresponding scene.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">            - player_choice (str): The choice made by the player.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">choices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_scene</span><span class="p">][</span><span class="s2">&quot;choices&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="nb">int</span><span class="p">(</span><span class="n">player_choice</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">choices</span><span class="p">):</span>
+            <span class="n">selected_choice</span> <span class="o">=</span> <span class="n">choices</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">player_choice</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_scene</span> <span class="o">=</span> <span class="n">selected_choice</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Invalid choice.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Story.save_state_to_json">
+<a class="viewcode-back" href="../../core.html#core.story.Story.save_state_to_json">[docs]</a>
+    <span class="k">def</span> <span class="nf">save_state_to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves the current game state to a JSON file.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            - filename (str): The name of the JSON file to save the state.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saving state to JSON...&quot;</span><span class="p">)</span>
+        <span class="c1"># Convertendo as chaves do dicionário choices para strings</span>
+        <span class="n">choices_str</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">):</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">choices</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;current_scene&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_scene</span><span class="p">,</span>
+            <span class="s2">&quot;character_name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">character</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;scenes&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">scenes</span><span class="p">,</span>
+            <span class="s2">&quot;choices&quot;</span><span class="p">:</span> <span class="n">choices_str</span>  <span class="c1"># Usando as chaves convertidas para strings</span>
+        <span class="p">}</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saved state to JSON.&quot;</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, BezerraC.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

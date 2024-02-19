@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>core.ui &mdash; StoryForge Documentation 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            StoryForge Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">StoryForge</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">StoryForge Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">core.ui</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for core.ui</h1><div class="highlight"><pre>
+<span></span><span class="c1"># core/ui.py</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">pygame</span>
+<span class="kn">from</span> <span class="nn">pygame.locals</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">from</span> <span class="nn">core.menu</span> <span class="kn">import</span> <span class="n">StoryMenu</span>
+<span class="kn">from</span> <span class="nn">core.story</span> <span class="kn">import</span> <span class="n">Story</span>
+
+<span class="n">IMAGE_SCENE</span> <span class="o">=</span> <span class="s2">&quot;images/scene&quot;</span>
+<span class="n">IMAGE_CHAR</span> <span class="o">=</span> <span class="s2">&quot;images/character&quot;</span>
+<span class="n">WHITE</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+<span class="n">BLACK</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> 
+<span class="n">CHOICE_COLOR_NORMAL</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">CHOICE_COLOR_HOVER</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">180</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PygameUI">
+<a class="viewcode-back" href="../../core.html#core.ui.PygameUI">[docs]</a>
+<span class="k">class</span> <span class="nc">PygameUI</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to manage game UI using Pygame.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        - story (Story): The game&#39;s story object.</span>
+
+<span class="sd">    Public Methods:</span>
+<span class="sd">        - __init__(story: Story): Initializes the game&#39;s user interface.</span>
+<span class="sd">        - show_initial_menu(): Displays the game&#39;s initial menu.</span>
+<span class="sd">        - get_player_name(default_name: str) -&gt; str: Gets the player&#39;s name when running the game.</span>
+<span class="sd">        - render_text_with_background(text: str, height: int, bottom_aligned: bool = False, opacity: int = 128, speech_text: Optional[str] = None) -&gt; pygame.Rect: Renders text with background.</span>
+<span class="sd">        - render_input_screen(input_string: str, default_name: str) -&gt; None: Renders the input screen for the player name.</span>
+<span class="sd">        - show_input_screen(default_name: str) -&gt; None: Displays the input screen for the player name.</span>
+<span class="sd">        - render_choice(choice_text: str, x: int, y: int) -&gt; Tuple[pygame.Rect, int]: Renders a choice on the screen.</span>
+<span class="sd">        - render_text(text: str, x: int, y: int) -&gt; pygame.Rect: Renders text on the screen.</span>
+<span class="sd">        - show_scene() -&gt; None: Displays the current game scene on the screen.</span>
+<span class="sd">        - wait_for_click() -&gt; None: Waits for a mouse click on the screen.</span>
+<span class="sd">        - show_choices(hover_choice: Optional[int] = None) -&gt; Optional[int]: Displays the choice options on the screen.</span>
+<span class="sd">        - handle_events() -&gt; None: Handles game events.</span>
+<span class="sd">        - run() -&gt; None: Starts running the game.</span>
+<span class="sd">        - check_for_click() -&gt; bool: Checks whether a click has occurred on the screen.</span>
+<span class="sd">        - check_text_and_speech_displayed() -&gt; bool: Checks whether the scene text and the character&#39;s speech (if any) have already been displayed.</span>
+<span class="sd">        - process_click(pos: Tuple[int, int]) -&gt; None: Processes the mouse click on the screen.</span>
+<span class="sd">        - save_and_quit() -&gt; None: Saves the current state and closes the game window.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">story</span><span class="p">:</span> <span class="n">Story</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the game&#39;s user interface.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            - story (Story): The game&#39;s story object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">story</span> <span class="o">=</span> <span class="n">story</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_mode</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">pygame</span><span class="o">.</span><span class="n">FULLSCREEN</span><span class="p">)</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_caption</span><span class="p">(</span><span class="s2">&quot;StoryForge::&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">SysFont</span><span class="p">(</span><span class="s2">&quot;Arial&quot;</span><span class="p">,</span> <span class="mi">24</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">choice_rects</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">player_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_character_speech</span>  <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">character_speech_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_text_displayed</span> <span class="o">=</span> <span class="kc">False</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_speech_displayed</span> <span class="o">=</span> <span class="kc">False</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">menu</span> <span class="o">=</span> <span class="n">StoryMenu</span><span class="p">(</span><span class="n">story</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close_window</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">set_allowed</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">QUIT</span><span class="p">)</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">set_allowed</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">KEYDOWN</span><span class="p">)</span>
+        
+        
+<div class="viewcode-block" id="PygameUI.show_initial_menu">
+<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.show_initial_menu">[docs]</a>
+    <span class="k">def</span> <span class="nf">show_initial_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Displays the game&#39;s home menu on the screen.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menu</span><span class="o">.</span><span class="n">show_menu</span><span class="p">()</span>  <span class="c1"># Shows the home menu</span></div>
+
+
+<div class="viewcode-block" id="PygameUI.get_player_name">
+<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.get_player_name">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_player_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the player&#39;s name when running the game.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            - default_name (str): The default name of the player.</span>
+
+<span class="sd">         Return:</span>
+<span class="sd">             str: The player&#39;s name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Checks if the player name is already defined in the story object</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">character</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">character</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>  <span class="c1"># Returns the name of the already defined player</span>
+        <span class="k">else</span><span class="p">:</span>
+        
+            <span class="n">input_active</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">input_text</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">clock</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">Clock</span><span class="p">()</span>
+
+            <span class="k">while</span> <span class="n">input_active</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">QUIT</span><span class="p">:</span>
+                        <span class="n">pygame</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+                        <span class="n">quit</span><span class="p">()</span>
+                    <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">KEYDOWN</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_RETURN</span><span class="p">:</span>
+                            <span class="n">input_active</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_BACKSPACE</span><span class="p">:</span>
+                            <span class="n">input_text</span> <span class="o">=</span> <span class="n">input_text</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">input_text</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">unicode</span><span class="p">)</span>
+
+                <span class="n">input_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">input_text</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">render_input_screen</span><span class="p">(</span><span class="n">input_string</span><span class="p">,</span> <span class="n">default_name</span><span class="p">)</span>
+
+                <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+                <span class="n">clock</span><span class="o">.</span><span class="n">tick</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">input_string</span> <span class="k">if</span> <span class="n">input_string</span> <span class="k">else</span> <span class="n">default_name</span>  </div>
+
+
+<div class="viewcode-block" id="PygameUI.render_text_with_background">
+<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.render_text_with_background">[docs]</a>
+    <span class="k">def</span> <span class="nf">render_text_with_background</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bottom_aligned</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">opacity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span> <span class="n">speech_text</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Renders text with background on the screen.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            - text (str): The text to be rendered.</span>
+<span class="sd">            - height (int): The height of the background rectangle.</span>
+<span class="sd">            - bottom_aligned (bool): If True, the text is aligned at the bottom of the rectangle.</span>
+<span class="sd">            - opacity (int): The opacity of the background.</span>
+<span class="sd">            - speech_text (Optional[str]): The text of the character&#39;s speech.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            pygame.Rect: The rectangle surrounding the rendered text.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_width</span><span class="p">()</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_width</span><span class="p">()</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_height</span><span class="p">()</span> <span class="o">-</span> <span class="n">height</span> <span class="k">if</span> <span class="n">bottom_aligned</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_height</span><span class="p">()</span> <span class="o">//</span> <span class="mi">2</span>
+
+        <span class="n">background_rect</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">width</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+        
+        <span class="n">black_surface</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">((</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">),</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+        <span class="n">black_surface</span><span class="o">.</span><span class="n">fill</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">opacity</span><span class="p">))</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">black_surface</span><span class="p">,</span> <span class="n">background_rect</span><span class="o">.</span><span class="n">topleft</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">speech_text</span><span class="p">:</span>
+            <span class="n">rendered_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">speech_text</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rendered_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">))</span>
+
+        <span class="n">text_rect</span> <span class="o">=</span> <span class="n">rendered_text</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="n">height</span> <span class="o">//</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">rendered_text</span><span class="p">,</span> <span class="n">text_rect</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">background_rect</span></div>
+
+    
+    
+<div class="viewcode-block" id="PygameUI.render_input_screen">
+<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.render_input_screen">[docs]</a>
+    <span class="k">def</span> <span class="nf">render_input_screen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Renders the input screen for the player name.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            - input_string (str): The currently entered player name.</span>
+<span class="sd">            - default_name (str): The default name of the player.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">BLACK</span><span class="p">)</span>  <span class="c1"># Black background</span>
+        
+        <span class="c1"># Renders white text stating that the default name is &quot;BezerraC&quot;</span>
+        <span class="n">default_text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Default name: </span><span class="si">{</span><span class="n">default_name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">default_rendered</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">default_text</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">WHITE</span><span class="p">)</span>
+        <span class="n">default_rect</span> <span class="o">=</span> <span class="n">default_rendered</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_width</span><span class="p">()</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_height</span><span class="p">()</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">60</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">default_rendered</span><span class="p">,</span> <span class="n">default_rect</span><span class="p">)</span>
+        
+        <span class="c1"># Renders white text</span>
+        <span class="n">prompt_text</span> <span class="o">=</span> <span class="s2">&quot;Enter the character&#39;s name:&quot;</span>
+        <span class="n">prompt_rendered</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">prompt_text</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">WHITE</span><span class="p">)</span>
+        <span class="n">prompt_rect</span> <span class="o">=</span> <span class="n">prompt_rendered</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_width</span><span class="p">()</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_height</span><span class="p">()</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">20</span><span class="p">))</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">prompt_rendered</span><span class="p">,</span> <span class="n">prompt_rect</span><span class="p">)</span>
+
+        <span class="c1"># Add input field white text</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">input_string</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">WHITE</span><span class="p">)</span>
+        <span class="n">text_rect</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_width</span><span class="p">()</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">prompt_rect</span><span class="o">.</span><span class="n">bottom</span> <span class="o">+</span> <span class="mi">35</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">text_rect</span><span class="p">)</span></div>
+
+       
+
+<div class="viewcode-block" id="PygameUI.show_input_screen">
+<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.show_input_screen">[docs]</a>
+    <span class="k">def</span> <span class="nf">show_input_screen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Displays the input screen for the player name.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            - default_name (str): The default name of the player.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">WHITE</span><span class="p">)</span>
+        <span class="n">prompt_text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Enter the character&#39;s name: </span><span class="si">{</span><span class="n">default_name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">prompt_text</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">BLACK</span><span class="p">)</span>
+        <span class="n">text_rect</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_width</span><span class="p">()</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_height</span><span class="p">()</span> <span class="o">//</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">text_rect</span><span class="p">)</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span></div>
+
+    
+<div class="viewcode-block" id="PygameUI.render_choice">
+<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.render_choice">[docs]</a>
+    <span class="k">def</span> <span class="nf">render_choice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">choice_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Renders a choice on the screen.</span>
+
+<span class="sd">         Parameters:</span>
+<span class="sd">             - choice_text (str): The text of the choice.</span>
+<span class="sd">             - x (int): The x coordinate of the center of the pick.</span>
+<span class="sd">             - y (int): The y-coordinate of the center of the pick.</span>
+
+<span class="sd">         Return:</span>
+<span class="sd">             Tuple[pygame.Rect, int]: A tuple containing the rectangle of the choice and the vertical space between choices.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rect_width</span> <span class="o">=</span> <span class="mi">600</span>
+        <span class="n">rect_height</span> <span class="o">=</span> <span class="mi">40</span>
+        <span class="n">space_between_choices</span> <span class="o">=</span> <span class="mi">50</span>
+
+        <span class="n">rect</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">rect_width</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">y</span> <span class="o">-</span> <span class="n">rect_height</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">rect_width</span><span class="p">,</span> <span class="n">rect_height</span><span class="p">)</span>
+        <span class="n">is_hover</span> <span class="o">=</span> <span class="n">rect</span><span class="o">.</span><span class="n">collidepoint</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">mouse</span><span class="o">.</span><span class="n">get_pos</span><span class="p">())</span>
+
+        <span class="n">choice_color</span> <span class="o">=</span> <span class="n">CHOICE_COLOR_HOVER</span> <span class="k">if</span> <span class="n">is_hover</span> <span class="k">else</span> <span class="n">CHOICE_COLOR_NORMAL</span>
+
+        <span class="n">choice_surface</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">((</span><span class="n">rect_width</span><span class="p">,</span> <span class="n">rect_height</span><span class="p">),</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+        <span class="n">choice_surface</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">choice_color</span><span class="p">)</span>
+
+        <span class="n">rendered_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">choice_text</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">))</span>
+        <span class="n">text_rect</span> <span class="o">=</span> <span class="n">rendered_text</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">(</span><span class="n">rect_width</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">rect_height</span> <span class="o">//</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">choice_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">rendered_text</span><span class="p">,</span> <span class="n">text_rect</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">choice_surface</span><span class="p">,</span> <span class="n">rect</span><span class="o">.</span><span class="n">topleft</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">rect</span><span class="p">,</span> <span class="n">space_between_choices</span></div>
+
+
+<div class="viewcode-block" id="PygameUI.render_text">
+<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.render_text">[docs]</a>
+    <span class="k">def</span> <span class="nf">render_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Renders text on the screen.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            - text (str): The text to be rendered.</span>
+<span class="sd">            - x (int): The x-coordinate of the center of the text.</span>
+<span class="sd">            - y (int): The y-coordinate of the center of the text.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            pygame.Rect: The rectangle surrounding the rendered text.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rendered_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">))</span>
+        <span class="n">rect</span> <span class="o">=</span> <span class="n">rendered_text</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">rendered_text</span><span class="p">,</span> <span class="n">rect</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">rect</span></div>
+
+
+<div class="viewcode-block" id="PygameUI.show_scene">
+<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.show_scene">[docs]</a>
+    <span class="k">def</span> <span class="nf">show_scene</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Displays the current game scene on the screen.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handle_events</span><span class="p">()</span>
+        <span class="n">scene</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">scenes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">current_scene</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">scene</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">]:</span>
+            <span class="n">background</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">IMAGE_SCENE</span><span class="p">,</span> <span class="n">scene</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">background</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">scene</span><span class="p">[</span><span class="s2">&quot;character_image&quot;</span><span class="p">]:</span>
+            <span class="n">character_image</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">IMAGE_CHAR</span><span class="p">,</span> <span class="n">scene</span><span class="p">[</span><span class="s2">&quot;character_image&quot;</span><span class="p">]))</span>
+            <span class="n">character_rect</span> <span class="o">=</span> <span class="n">character_image</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_width</span><span class="p">()</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">900</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">character_image</span><span class="p">,</span> <span class="n">character_rect</span><span class="p">)</span>
+
+        <span class="c1"># Checks for character_speech in the scene</span>
+        <span class="k">if</span> <span class="n">scene</span><span class="p">[</span><span class="s2">&quot;character_speech&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_character_speech</span><span class="p">:</span>
+                <span class="c1"># If there is character_speech and the flag is not activated, render the scene text and wait for the click</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">render_text_with_background</span><span class="p">(</span><span class="n">scene</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span> <span class="mi">150</span><span class="p">,</span> <span class="n">bottom_aligned</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="mi">180</span><span class="p">)</span>
+                <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_click</span><span class="p">()</span>  <span class="c1"># Method that waits for click on the screen</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">show_text_displayed</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Marks that the scene text has been displayed</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">show_character_speech</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">show_speech_displayed</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Resets the character&#39;s speech marking</span>
+                <span class="k">return</span>
+
+            <span class="c1"># If the flag is activated, displays the character&#39;s speech</span>
+            <span class="n">full_speech_text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">character</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">scene</span><span class="p">[</span><span class="s1">&#39;character_speech&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">character_speech_text</span> <span class="o">=</span> <span class="n">scene</span><span class="p">[</span><span class="s2">&quot;character_speech&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">render_text_with_background</span><span class="p">(</span><span class="n">full_speech_text</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="n">bottom_aligned</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="mi">180</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_speech_displayed</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Mark that the character&#39;s speech was displayed</span>
+
+        <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_character_speech</span><span class="p">:</span>
+            <span class="c1"># If the flag is not activated and there is no character speech, displays the scene&#39;s default text</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">character_speech_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># Limpa o texto da fala do personagem</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">render_text_with_background</span><span class="p">(</span><span class="n">scene</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">],</span> <span class="mi">150</span><span class="p">,</span> <span class="n">bottom_aligned</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">opacity</span><span class="o">=</span><span class="mi">180</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_text_displayed</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Marks that the scene text has been displayed</span></div>
+
+        
+
+<div class="viewcode-block" id="PygameUI.wait_for_click">
+<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.wait_for_click">[docs]</a>
+    <span class="k">def</span> <span class="nf">wait_for_click</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Wait for a mouse click on the screen.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">waiting_for_click</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">while</span> <span class="n">waiting_for_click</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">MOUSEBUTTONDOWN</span><span class="p">:</span>
+                    <span class="n">waiting_for_click</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+    
+
+<div class="viewcode-block" id="PygameUI.show_choices">
+<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.show_choices">[docs]</a>
+    <span class="k">def</span> <span class="nf">show_choices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hover_choice</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Displays choice options on the screen.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            - hover_choice (Optional[int]): The number of the choice being highlighted by the mouse.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            Optional[int]: The number of the choice highlighted by the mouse.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">choice_rects</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">y_position</span> <span class="o">=</span> <span class="mi">400</span>
+
+        <span class="n">scene</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">scenes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">current_scene</span><span class="p">]</span>
+
+        <span class="c1"># Check if &quot;character_speech&quot; exists in the scene</span>
+        <span class="k">if</span> <span class="s2">&quot;character_speech&quot;</span> <span class="ow">in</span> <span class="n">scene</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">scene</span><span class="p">[</span><span class="s2">&quot;character_speech&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_character_speech</span><span class="p">:</span>
+                    <span class="c1"># If there is character_speech and the flag is not activated, render the character_speech before the choice buttons</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">show_character_speech</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">show_scene</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">choice_text</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">scene</span><span class="p">[</span><span class="s2">&quot;choices&quot;</span><span class="p">],</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">rect</span><span class="p">,</span> <span class="n">space_between</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_choice</span><span class="p">(</span><span class="n">choice_text</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_width</span><span class="p">()</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">y_position</span><span class="p">)</span>
+
+            <span class="c1">#print(f&quot;Choice {i}: {rect}&quot;)</span>
+            <span class="k">if</span> <span class="n">rect</span><span class="o">.</span><span class="n">collidepoint</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">mouse</span><span class="o">.</span><span class="n">get_pos</span><span class="p">()):</span>  <span class="c1"># Check hover directly here</span>
+                <span class="n">hover_choice</span> <span class="o">=</span> <span class="n">i</span>
+
+            <span class="n">y_position</span> <span class="o">+=</span> <span class="n">space_between</span>
+
+        <span class="k">return</span> <span class="n">hover_choice</span></div>
+
+        
+<div class="viewcode-block" id="PygameUI.handle_events">
+<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.handle_events">[docs]</a>
+    <span class="k">def</span> <span class="nf">handle_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handles game events.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">QUIT</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">save_and_quit</span><span class="p">()</span>  <span class="c1"># Calls save_and_quit() when the window close event is triggered</span>
+            <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">MOUSEBUTTONDOWN</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">process_click</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">)</span></div>
+
+            
+<div class="viewcode-block" id="PygameUI.run">
+<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.run">[docs]</a>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Starts running the game.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">running</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">clock</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">Clock</span><span class="p">()</span>
+        <span class="n">iterations</span> <span class="o">=</span> <span class="mi">0</span>
+       
+        <span class="k">while</span> <span class="n">running</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">max_iterations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">iterations</span> <span class="o">&gt;=</span> <span class="n">max_iterations</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="c1"># Gets the player&#39;s name while playing the game</span>
+            <span class="n">player_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_player_name</span><span class="p">(</span><span class="n">default_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">default_player_name</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span>
+            <span class="c1"># Sets the player&#39;s name</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">set_character_name</span><span class="p">(</span><span class="n">player_name</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">handle_events</span><span class="p">()</span>
+
+            <span class="n">hover_choice</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">rect</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">choice_rects</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">rect</span><span class="o">.</span><span class="n">collidepoint</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">mouse</span><span class="o">.</span><span class="n">get_pos</span><span class="p">()):</span>
+                    <span class="n">hover_choice</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+        
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_scene</span><span class="p">()</span>
+            <span class="n">hover_choice</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_choices</span><span class="p">(</span><span class="n">hover_choice</span><span class="p">)</span>
+            
+            <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+            <span class="n">clock</span><span class="o">.</span><span class="n">tick</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+            
+            <span class="c1"># Check if the story has come to an end</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">has_choices</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;story_state.json&quot;</span><span class="p">):</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;story_state.json&quot;</span><span class="p">)</span>
+
+                <span class="c1"># If there are no choices, check whether the scene text and the character&#39;s speech (if any) have already been read.</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_character_speech</span><span class="p">:</span>
+                    <span class="c1"># If the character&#39;s speech has already been displayed and the screen is clicked, the game ends</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_speech_displayed</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_for_click</span><span class="p">():</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">save_state</span><span class="p">()</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;If the character&#39;s speech has already been displayed and the screen is clicked, the game ends&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">show_initial_menu</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># If there is no speech from the character, end the game by clicking on the screen</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_for_click</span><span class="p">():</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">save_state</span><span class="p">()</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;If there is no speech from the character, end the game by clicking on the screen&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">show_initial_menu</span><span class="p">()</span>
+            <span class="n">iterations</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+                        
+<div class="viewcode-block" id="PygameUI.check_for_click">
+<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.check_for_click">[docs]</a>
+    <span class="k">def</span> <span class="nf">check_for_click</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks whether a click has occurred on the screen.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            bool: True if a click occurred, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Checks whether a click has occurred on the screen</span>
+        <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">MOUSEBUTTONDOWN</span> <span class="ow">and</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># self.save_and_quit()</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="PygameUI.check_text_and_speech_displayed">
+<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.check_text_and_speech_displayed">[docs]</a>
+    <span class="k">def</span> <span class="nf">check_text_and_speech_displayed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks whether the scene text and character speech (if any) have already been displayed.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            bool: True if the scene text and character speech have already been displayed, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Checks whether the scene text and character speech (if any) have already been displayed</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_text_displayed</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">character_speech_text</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_speech_displayed</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PygameUI.process_click">
+<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.process_click">[docs]</a>
+    <span class="k">def</span> <span class="nf">process_click</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Processes the mouse click on the screen.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            - pos (Tuple[int, int]): The (x, y) coordinates of the mouse click.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">y_position</span> <span class="o">=</span> <span class="mi">400</span>
+        <span class="n">scene</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">scenes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">current_scene</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">choice_text</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">scene</span><span class="p">[</span><span class="s2">&quot;choices&quot;</span><span class="p">],</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">rect_width</span> <span class="o">=</span> <span class="mi">600</span>
+            <span class="n">rect_height</span> <span class="o">=</span> <span class="mi">40</span>
+            <span class="n">space_between_choices</span> <span class="o">=</span> <span class="mi">50</span>
+
+            <span class="n">rect</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_width</span><span class="p">()</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">rect_width</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">y_position</span> <span class="o">-</span> <span class="n">rect_height</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">rect_width</span><span class="p">,</span> <span class="n">rect_height</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">rect</span><span class="o">.</span><span class="n">collidepoint</span><span class="p">(</span><span class="n">pos</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Choice made: </span><span class="si">{</span><span class="n">choice_text</span><span class="si">}</span><span class="s2">, show_character_speech: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">show_character_speech</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                
+                <span class="c1"># Regardless of the value of show_character_speech, advance to the next scene</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">make_choice</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">show_character_speech</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="c1"># If there is character_speech, switch between default text and character speech</span>
+                <span class="k">if</span> <span class="n">scene</span><span class="p">[</span><span class="s2">&quot;character_speech&quot;</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">show_character_speech</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_character_speech</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_character_speech</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">show_scene</span><span class="p">()</span>  <span class="c1"># Shows the character&#39;s speech</span>
+                
+                <span class="k">break</span>
+            
+            <span class="n">y_position</span> <span class="o">+=</span> <span class="n">space_between_choices</span>
+
+        <span class="c1"># Handle click on main screen</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">rect</span><span class="o">.</span><span class="n">collidepoint</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span> <span class="k">for</span> <span class="n">rect</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">choice_rects</span><span class="p">):</span>
+            <span class="c1"># If clicked on the main screen and there is a character_speech, toggle between the default text and the character&#39;s speech</span>
+            <span class="k">if</span> <span class="n">scene</span><span class="p">[</span><span class="s2">&quot;character_speech&quot;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">show_character_speech</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_character_speech</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_character_speech</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">show_scene</span><span class="p">()</span>  <span class="c1"># Shows the character&#39;s speech</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">pass</span>  <span class="c1"># Show default scene text</span></div>
+
+
+<div class="viewcode-block" id="PygameUI.save_and_quit">
+<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.save_and_quit">[docs]</a>
+    <span class="k">def</span> <span class="nf">save_and_quit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Saves the current state and closes the game window.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">BLACK</span><span class="p">)</span>  <span class="c1"># Black background</span>
+
+        <span class="c1"># Asks the player if they want to save before exiting</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">render_text</span><span class="p">(</span><span class="s2">&quot;Do you really want to leave?&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_width</span><span class="p">()</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+        <span class="n">rect_sim</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_choice</span><span class="p">(</span><span class="s2">&quot;Yes&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_width</span><span class="p">()</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">450</span><span class="p">)</span>
+        <span class="n">rect_nao</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">render_choice</span><span class="p">(</span><span class="s2">&quot;No&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">get_width</span><span class="p">()</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Leaving...&quot;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">MOUSEBUTTONDOWN</span><span class="p">:</span>
+                    <span class="c1"># Checks whether the click was on the &quot;Yes&quot; or &quot;No&quot; options</span>
+                    <span class="k">if</span> <span class="n">rect_sim</span><span class="o">.</span><span class="n">collidepoint</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">):</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Yes&quot;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">story</span><span class="o">.</span><span class="n">save_state</span><span class="p">()</span>  <span class="c1"># Saves the current state</span>
+                        <span class="n">pygame</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+                        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+                    <span class="k">elif</span> <span class="n">rect_nao</span><span class="o">.</span><span class="n">collidepoint</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">):</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No&quot;</span><span class="p">)</span>
+                        <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>  <span class="c1"># Clears all events from the pygame event queue</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">close_window</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Sets close_window to False</span>
+                        <span class="k">return</span>  <span class="c1"># Return to the game without saving</span></div>
+</div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, BezerraC.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

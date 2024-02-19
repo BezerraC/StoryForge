@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>build &mdash; StoryForge Documentation 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            StoryForge Documentation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">StoryForge</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">StoryForge Documentation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">build</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for build</h1><div class="highlight"><pre>
+<span></span><span class="c1">#build.py</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">ast</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">platform</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+
+
+<div class="viewcode-block" id="resize_images">
+<a class="viewcode-back" href="../build.html#build.resize_images">[docs]</a>
+<span class="k">def</span> <span class="nf">resize_images</span><span class="p">(</span><span class="n">resolution</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Resizes scene images according to the specified resolution.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        - resolution (str): The target resolution for resizing (&#39;hd&#39;, &#39;fullhd&#39; or &#39;4k&#39;).</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">resolution</span> <span class="o">==</span> <span class="s1">&#39;hd&#39;</span><span class="p">:</span>
+        <span class="n">target_resolution</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1280</span><span class="p">,</span> <span class="mi">720</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">resolution</span> <span class="o">==</span> <span class="s1">&#39;fullhd&#39;</span><span class="p">:</span>
+        <span class="n">target_resolution</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1920</span><span class="p">,</span> <span class="mi">1080</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">resolution</span> <span class="o">==</span> <span class="s1">&#39;4k&#39;</span><span class="p">:</span>
+        <span class="n">target_resolution</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3840</span><span class="p">,</span> <span class="mi">2160</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid resolution. Choose between &#39;hd&#39;, &#39;fullhd&#39; and &#39;4k&#39;.&quot;</span><span class="p">)</span>
+
+    <span class="n">image_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">&quot;images/scene&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">image_dir</span><span class="p">):</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">image_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span> <span class="k">as</span> <span class="n">img</span><span class="p">:</span>
+                <span class="n">img_resized</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">target_resolution</span><span class="p">)</span>
+                <span class="n">img_resized</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="compile_bootloader">
+<a class="viewcode-back" href="../build.html#build.compile_bootloader">[docs]</a>
+<span class="k">def</span> <span class="nf">compile_bootloader</span><span class="p">(</span><span class="n">platform_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compiles the bootloader for the specific platform.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        - platform_name (str): The name of the target platform (&#39;windows&#39; or &#39;linux&#39;).</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check current platform</span>
+    <span class="n">current_platform</span> <span class="o">=</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    
+    <span class="c1"># Define compilation commands for each platform</span>
+    <span class="k">if</span> <span class="n">current_platform</span> <span class="o">==</span> <span class="s1">&#39;windows&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">platform_name</span> <span class="o">==</span> <span class="s1">&#39;windows&#39;</span><span class="p">:</span>
+            <span class="n">compile_command</span> <span class="o">=</span> <span class="s1">&#39;python ./waf all --target-arch=64bit&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">compile_command</span> <span class="o">=</span> <span class="s1">&#39;python ./waf all --target-arch=32bit&#39;</span>
+    <span class="k">elif</span> <span class="n">current_platform</span> <span class="o">==</span> <span class="s1">&#39;linux&#39;</span><span class="p">:</span>
+        <span class="n">compile_command</span> <span class="o">=</span> <span class="s1">&#39;python ./waf all&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Platform not supported.&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+    
+    <span class="c1"># Run the build command</span>
+    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">compile_command</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="extract_scenes">
+<a class="viewcode-back" href="../build.html#build.extract_scenes">[docs]</a>
+<span class="k">def</span> <span class="nf">extract_scenes</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extracts scenes, mentioned choices, and mentioned scenes from the specified file.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        - file_path (str): The path to the file containing the story.</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        Tuple[List[str], Set[str], Set[str]]: A tuple containing lists of scenes, mentioned choices,</span>
+<span class="sd">        and mentioned scenes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">code</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">tree</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+        <span class="n">scenes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">mentioned_choices</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">mentioned_scenes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">ast</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">tree</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Attribute</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;add_scene&quot;</span><span class="p">:</span>
+                        <span class="n">scenes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;add_choice&quot;</span><span class="p">:</span>
+                        <span class="n">mentioned_choices</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">arg</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]])</span>
+                        <span class="n">mentioned_scenes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">scenes</span><span class="p">,</span> <span class="n">mentioned_choices</span><span class="p">,</span> <span class="n">mentioned_scenes</span></div>
+
+    
+<div class="viewcode-block" id="print_warning">
+<a class="viewcode-back" href="../build.html#build.print_warning">[docs]</a>
+<span class="k">def</span> <span class="nf">print_warning</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prints a warning message with orange color in the terminal.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        - message (str): The warning message to be printed.</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># ANSI code for the color orange</span>
+    <span class="n">orange_color_code</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[33m&#39;</span>
+    <span class="c1"># ANSI code to reset terminal color</span>
+    <span class="n">reset_color_code</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\033</span><span class="s1">[0m&#39;</span>
+    <span class="c1"># Print the warning in orange</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">orange_color_code</span><span class="si">}</span><span class="s2">Warning: </span><span class="si">{</span><span class="n">message</span><span class="si">}{</span><span class="n">reset_color_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="build">
+<a class="viewcode-back" href="../build.html#build.build">[docs]</a>
+<span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="n">platform</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">resolutions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">languages</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Builds the project for the specified platforms, resolutions, and languages.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        - platform (str): The target platform for the build (&#39;windows&#39; or &#39;linux&#39;).</span>
+<span class="sd">        - resolutions (List[str]): The resolutions to build to (&#39;hd&#39;, &#39;fullhd&#39; or &#39;4k&#39;).</span>
+<span class="sd">        - languages (List[str]): The languages to build for (&#39;en&#39; or &#39;pt&#39;).</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Get the path of the history file (example.py) file</span>
+    <span class="n">example_py_path</span> <span class="o">=</span> <span class="s2">&quot;example.py&quot;</span> 
+    <span class="n">current_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>  <span class="c1"># Get current directory</span>
+
+    <span class="c1"># Extract the scenes from the example.py file</span>
+    <span class="n">mentioned_scenes</span><span class="p">,</span> <span class="n">mentioned_choices</span><span class="p">,</span> <span class="n">defined_scenes</span> <span class="o">=</span> <span class="n">extract_scenes</span><span class="p">(</span><span class="n">example_py_path</span><span class="p">)</span>
+
+    <span class="c1"># Add the scenes mentioned in the choices to the defined scenes</span>
+    <span class="n">defined_scenes</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">mentioned_choices</span><span class="p">)</span>
+
+    <span class="c1"># Scene validation</span>
+    <span class="n">inaccessible_scenes</span> <span class="o">=</span> <span class="p">[</span><span class="n">scene</span> <span class="k">for</span> <span class="n">scene</span> <span class="ow">in</span> <span class="n">mentioned_scenes</span> <span class="k">if</span> <span class="n">scene</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">defined_scenes</span><span class="p">]</span>
+    
+    <span class="k">if</span> <span class="n">inaccessible_scenes</span><span class="p">:</span>
+        <span class="n">print_warning</span><span class="p">(</span><span class="s2">&quot;The following scenes are mentioned but not defined:&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">scene</span> <span class="ow">in</span> <span class="n">inaccessible_scenes</span><span class="p">:</span>
+            <span class="n">print_warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">scene</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;All scenes are accessible.&quot;</span><span class="p">)</span>
+
+
+    <span class="k">for</span> <span class="n">resolution</span> <span class="ow">in</span> <span class="n">resolutions</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">language</span> <span class="ow">in</span> <span class="n">languages</span><span class="p">:</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Building for platform: </span><span class="si">{</span><span class="n">platform</span><span class="si">}</span><span class="s2">, resolution: </span><span class="si">{</span><span class="n">resolution</span><span class="si">}</span><span class="s2">, language: </span><span class="si">{</span><span class="n">language</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># Resize images according to resolution</span>
+            <span class="n">resize_images</span><span class="p">(</span><span class="n">resolution</span><span class="p">)</span>
+            
+            <span class="c1"># Build the executable using PyInstaller and specify the bootloader to use</span>
+            <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;pyinstaller&quot;</span><span class="p">,</span> <span class="s2">&quot;example.py&quot;</span><span class="p">,</span> <span class="s2">&quot;--onefile&quot;</span><span class="p">])</span>
+
+            <span class="c1"># Change working directory to &#39;dist&#39; directory</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_dir</span><span class="p">,</span> <span class="s2">&quot;dist&quot;</span><span class="p">))</span>
+            <span class="c1"># Copy &#39;images&#39; directory to &#39;dist&#39;</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_dir</span><span class="p">,</span> <span class="s2">&quot;images&quot;</span><span class="p">),</span> <span class="s2">&quot;images&quot;</span><span class="p">,</span> <span class="n">dirs_exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1"># Restore the original working directory</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">current_dir</span><span class="p">)</span></div>
+
+            
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># Configure command-line argument parsing</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Build script for pygame project&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--platform&quot;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;windows&quot;</span><span class="p">,</span> <span class="s2">&quot;linux&quot;</span><span class="p">],</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Platform to build on&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--resolution&quot;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;hd&quot;</span><span class="p">,</span> <span class="s2">&quot;fullhd&quot;</span><span class="p">,</span> <span class="s2">&quot;4k&quot;</span><span class="p">],</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Resolutions to build towards&quot;</span><span class="p">)</span>
+    <span class="c1">#parser.add_argument(&quot;--language&quot;, nargs=&quot;+&quot;, choices=[&quot;en&quot;, &quot;pt&quot;], help=&quot;Languages to build for&quot;)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="c1"># Call the construction function with the given arguments</span>
+    <span class="n">build</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">platform</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">resolutions</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">languages</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, BezerraC.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
