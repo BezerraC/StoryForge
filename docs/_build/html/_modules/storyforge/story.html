@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>core.story &mdash; StoryForge Documentation 0.0.1 documentation</title>
+  <title>storyforge.story &mdash; StoryForge Documentation 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -61,7 +61,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">core.story</li>
+      <li class="breadcrumb-item active">storyforge.story</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -70,8 +70,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for core.story</h1><div class="highlight"><pre>
-<span></span><span class="c1"># core/story.py</span>
+  <h1>Source code for storyforge.story</h1><div class="highlight"><pre>
+<span></span><span class="c1"># storyforge/story.py</span>
 
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -82,7 +82,7 @@
 <span class="n">IMAGE_DIR</span> <span class="o">=</span> <span class="s2">&quot;images/character&quot;</span>
 
 <div class="viewcode-block" id="Story">
-<a class="viewcode-back" href="../../core.html#core.story.Story">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.story.Story">[docs]</a>
 <span class="k">class</span> <span class="nc">Story</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class responsible for manipulating the game&#39;s story.</span>
@@ -118,7 +118,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">default_player_name</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;BezerraC&quot;</span><span class="p">}</span>
 
 <div class="viewcode-block" id="Story.save_state">
-<a class="viewcode-back" href="../../core.html#core.story.Story.save_state">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.story.Story.save_state">[docs]</a>
     <span class="k">def</span> <span class="nf">save_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Saves the current game state to a JSON file.</span>
@@ -137,7 +137,7 @@
 
 
 <div class="viewcode-block" id="Story.load_state">
-<a class="viewcode-back" href="../../core.html#core.story.Story.load_state">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.story.Story.load_state">[docs]</a>
     <span class="k">def</span> <span class="nf">load_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads the previously saved state, if it exists.</span>
@@ -157,7 +157,7 @@
 
 
 <div class="viewcode-block" id="Story.create_empty_state">
-<a class="viewcode-back" href="../../core.html#core.story.Story.create_empty_state">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.story.Story.create_empty_state">[docs]</a>
     <span class="k">def</span> <span class="nf">create_empty_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Creates an empty state to start the game.</span>
@@ -177,7 +177,7 @@
 
         
 <div class="viewcode-block" id="Story.set_character_name">
-<a class="viewcode-back" href="../../core.html#core.story.Story.set_character_name">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.story.Story.set_character_name">[docs]</a>
     <span class="k">def</span> <span class="nf">set_character_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets the character&#39;s name.</span>
@@ -192,7 +192,7 @@
 
 
 <div class="viewcode-block" id="Story.add_scene">
-<a class="viewcode-back" href="../../core.html#core.story.Story.add_scene">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.story.Story.add_scene">[docs]</a>
     <span class="k">def</span> <span class="nf">add_scene</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">character_image</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">character_speech</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds a new scene to the story.</span>
@@ -211,7 +211,7 @@
 
 
 <div class="viewcode-block" id="Story.add_choice">
-<a class="viewcode-back" href="../../core.html#core.story.Story.add_choice">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.story.Story.add_choice">[docs]</a>
     <span class="k">def</span> <span class="nf">add_choice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_scene</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">to_scene</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds a choice the player can make in a given scene.</span>
@@ -229,7 +229,7 @@
 
 
 <div class="viewcode-block" id="Story.has_choices">
-<a class="viewcode-back" href="../../core.html#core.story.Story.has_choices">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.story.Story.has_choices">[docs]</a>
     <span class="k">def</span> <span class="nf">has_choices</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks whether there are choices available in the current scene.</span>
@@ -242,7 +242,7 @@
 
 
 <div class="viewcode-block" id="Story.validate_story">
-<a class="viewcode-back" href="../../core.html#core.story.Story.validate_story">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.story.Story.validate_story">[docs]</a>
     <span class="k">def</span> <span class="nf">validate_story</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validates the consistency of the story by looking for inaccessible scenes.</span>
@@ -259,7 +259,7 @@
 
 
 <div class="viewcode-block" id="Story.run">
-<a class="viewcode-back" href="../../core.html#core.story.Story.run">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.story.Story.run">[docs]</a>
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs the main game loop, showing the scenes, available options and processing the player&#39;s choices.</span>
@@ -282,7 +282,7 @@
 
 
 <div class="viewcode-block" id="Story.show_scene">
-<a class="viewcode-back" href="../../core.html#core.story.Story.show_scene">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.story.Story.show_scene">[docs]</a>
     <span class="k">def</span> <span class="nf">show_scene</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Displays the current game scene to standard output.</span>
@@ -306,7 +306,7 @@
 
 
 <div class="viewcode-block" id="Story.show_choices">
-<a class="viewcode-back" href="../../core.html#core.story.Story.show_choices">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.story.Story.show_choices">[docs]</a>
     <span class="k">def</span> <span class="nf">show_choices</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Displays the options available to the player on standard output.</span>
@@ -319,7 +319,7 @@
 
 
 <div class="viewcode-block" id="Story.make_choice">
-<a class="viewcode-back" href="../../core.html#core.story.Story.make_choice">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.story.Story.make_choice">[docs]</a>
     <span class="k">def</span> <span class="nf">make_choice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">player_choice</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Processes the player&#39;s choice and advances to the next corresponding scene.</span>
@@ -339,7 +339,7 @@
 
 
 <div class="viewcode-block" id="Story.save_state_to_json">
-<a class="viewcode-back" href="../../core.html#core.story.Story.save_state_to_json">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.story.Story.save_state_to_json">[docs]</a>
     <span class="k">def</span> <span class="nf">save_state_to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Saves the current game state to a JSON file.</span>

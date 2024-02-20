@@ -95,7 +95,14 @@ Make sure you have the following requirements met before building the project:
 3. Run the build script providing the necessary arguments. For example:
 
 ```python
-python build.py --platform <platform> --resolution <resolution>
+python -m forgebuild --platform <platform> --resolution <resolution>
+```
+
+## ⚙ Installing the package locally
+
+You can install StoryForge locally after performing `git clone` by following the command:
+```python
+pip install .\dist\StoryForge-0.0.1-py3-none-any.whl 
 ```
 
 ## 📫 Contributing to StoryForge

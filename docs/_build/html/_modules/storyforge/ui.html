@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>core.ui &mdash; StoryForge Documentation 0.0.1 documentation</title>
+  <title>storyforge.ui &mdash; StoryForge Documentation 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -61,7 +61,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">core.ui</li>
+      <li class="breadcrumb-item active">storyforge.ui</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -70,8 +70,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for core.ui</h1><div class="highlight"><pre>
-<span></span><span class="c1"># core/ui.py</span>
+  <h1>Source code for storyforge.ui</h1><div class="highlight"><pre>
+<span></span><span class="c1"># storyforge/ui.py</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
@@ -80,8 +80,8 @@
 <span class="kn">import</span> <span class="nn">pygame</span>
 <span class="kn">from</span> <span class="nn">pygame.locals</span> <span class="kn">import</span> <span class="o">*</span>
 
-<span class="kn">from</span> <span class="nn">core.menu</span> <span class="kn">import</span> <span class="n">StoryMenu</span>
-<span class="kn">from</span> <span class="nn">core.story</span> <span class="kn">import</span> <span class="n">Story</span>
+<span class="kn">from</span> <span class="nn">storyforge.menu</span> <span class="kn">import</span> <span class="n">StoryMenu</span>
+<span class="kn">from</span> <span class="nn">storyforge.story</span> <span class="kn">import</span> <span class="n">Story</span>
 
 <span class="n">IMAGE_SCENE</span> <span class="o">=</span> <span class="s2">&quot;images/scene&quot;</span>
 <span class="n">IMAGE_CHAR</span> <span class="o">=</span> <span class="s2">&quot;images/character&quot;</span>
@@ -91,7 +91,7 @@
 <span class="n">CHOICE_COLOR_HOVER</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">180</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PygameUI">
-<a class="viewcode-back" href="../../core.html#core.ui.PygameUI">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.ui.PygameUI">[docs]</a>
 <span class="k">class</span> <span class="nc">PygameUI</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class to manage game UI using Pygame.</span>
@@ -142,9 +142,21 @@
         <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">set_allowed</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">QUIT</span><span class="p">)</span>
         <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">set_allowed</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">KEYDOWN</span><span class="p">)</span>
         
+<div class="viewcode-block" id="PygameUI.welcome">
+<a class="viewcode-back" href="../../storyforge.html#storyforge.ui.PygameUI.welcome">[docs]</a>
+    <span class="k">def</span> <span class="nf">welcome</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Displays the welcome message in terminal.</span>
+
+<span class="sd">        Return:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Welcome to StoryForge!&quot;</span><span class="p">)</span></div>
+
+
         
 <div class="viewcode-block" id="PygameUI.show_initial_menu">
-<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.show_initial_menu">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.ui.PygameUI.show_initial_menu">[docs]</a>
     <span class="k">def</span> <span class="nf">show_initial_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Displays the game&#39;s home menu on the screen.</span>
@@ -156,7 +168,7 @@
 
 
 <div class="viewcode-block" id="PygameUI.get_player_name">
-<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.get_player_name">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.ui.PygameUI.get_player_name">[docs]</a>
     <span class="k">def</span> <span class="nf">get_player_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Gets the player&#39;s name when running the game.</span>
@@ -199,7 +211,7 @@
 
 
 <div class="viewcode-block" id="PygameUI.render_text_with_background">
-<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.render_text_with_background">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.ui.PygameUI.render_text_with_background">[docs]</a>
     <span class="k">def</span> <span class="nf">render_text_with_background</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bottom_aligned</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">opacity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span> <span class="n">speech_text</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Renders text with background on the screen.</span>
@@ -238,7 +250,7 @@
     
     
 <div class="viewcode-block" id="PygameUI.render_input_screen">
-<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.render_input_screen">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.ui.PygameUI.render_input_screen">[docs]</a>
     <span class="k">def</span> <span class="nf">render_input_screen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Renders the input screen for the player name.</span>
@@ -273,7 +285,7 @@
        
 
 <div class="viewcode-block" id="PygameUI.show_input_screen">
-<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.show_input_screen">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.ui.PygameUI.show_input_screen">[docs]</a>
     <span class="k">def</span> <span class="nf">show_input_screen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">default_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Displays the input screen for the player name.</span>
@@ -293,7 +305,7 @@
 
     
 <div class="viewcode-block" id="PygameUI.render_choice">
-<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.render_choice">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.ui.PygameUI.render_choice">[docs]</a>
     <span class="k">def</span> <span class="nf">render_choice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">choice_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Renders a choice on the screen.</span>
@@ -328,7 +340,7 @@
 
 
 <div class="viewcode-block" id="PygameUI.render_text">
-<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.render_text">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.ui.PygameUI.render_text">[docs]</a>
     <span class="k">def</span> <span class="nf">render_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Renders text on the screen.</span>
@@ -348,7 +360,7 @@
 
 
 <div class="viewcode-block" id="PygameUI.show_scene">
-<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.show_scene">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.ui.PygameUI.show_scene">[docs]</a>
     <span class="k">def</span> <span class="nf">show_scene</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Displays the current game scene on the screen.</span>
@@ -395,7 +407,7 @@
         
 
 <div class="viewcode-block" id="PygameUI.wait_for_click">
-<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.wait_for_click">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.ui.PygameUI.wait_for_click">[docs]</a>
     <span class="k">def</span> <span class="nf">wait_for_click</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Wait for a mouse click on the screen.</span>
@@ -412,7 +424,7 @@
     
 
 <div class="viewcode-block" id="PygameUI.show_choices">
-<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.show_choices">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.ui.PygameUI.show_choices">[docs]</a>
     <span class="k">def</span> <span class="nf">show_choices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hover_choice</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Displays choice options on the screen.</span>
@@ -450,7 +462,7 @@
 
         
 <div class="viewcode-block" id="PygameUI.handle_events">
-<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.handle_events">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.ui.PygameUI.handle_events">[docs]</a>
     <span class="k">def</span> <span class="nf">handle_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Handles game events.</span>
@@ -467,7 +479,7 @@
 
             
 <div class="viewcode-block" id="PygameUI.run">
-<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.run">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.ui.PygameUI.run">[docs]</a>
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Starts running the game.</span>
@@ -522,7 +534,7 @@
 
                         
 <div class="viewcode-block" id="PygameUI.check_for_click">
-<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.check_for_click">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.ui.PygameUI.check_for_click">[docs]</a>
     <span class="k">def</span> <span class="nf">check_for_click</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks whether a click has occurred on the screen.</span>
@@ -539,7 +551,7 @@
 
 
 <div class="viewcode-block" id="PygameUI.check_text_and_speech_displayed">
-<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.check_text_and_speech_displayed">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.ui.PygameUI.check_text_and_speech_displayed">[docs]</a>
     <span class="k">def</span> <span class="nf">check_text_and_speech_displayed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks whether the scene text and character speech (if any) have already been displayed.</span>
@@ -552,7 +564,7 @@
 
 
 <div class="viewcode-block" id="PygameUI.process_click">
-<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.process_click">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.ui.PygameUI.process_click">[docs]</a>
     <span class="k">def</span> <span class="nf">process_click</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Processes the mouse click on the screen.</span>
@@ -601,7 +613,7 @@
 
 
 <div class="viewcode-block" id="PygameUI.save_and_quit">
-<a class="viewcode-back" href="../../core.html#core.ui.PygameUI.save_and_quit">[docs]</a>
+<a class="viewcode-back" href="../../storyforge.html#storyforge.ui.PygameUI.save_and_quit">[docs]</a>
     <span class="k">def</span> <span class="nf">save_and_quit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Saves the current state and closes the game window.</span>

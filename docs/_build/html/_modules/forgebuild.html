@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>build &mdash; StoryForge Documentation 0.0.1 documentation</title>
+  <title>forgebuild &mdash; StoryForge Documentation 0.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -61,7 +61,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
-      <li class="breadcrumb-item active">build</li>
+      <li class="breadcrumb-item active">forgebuild</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -70,7 +70,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for build</h1><div class="highlight"><pre>
+  <h1>Source code for forgebuild</h1><div class="highlight"><pre>
 <span></span><span class="c1">#build.py</span>
 
 <span class="kn">import</span> <span class="nn">argparse</span>
@@ -85,7 +85,7 @@
 
 
 <div class="viewcode-block" id="resize_images">
-<a class="viewcode-back" href="../build.html#build.resize_images">[docs]</a>
+<a class="viewcode-back" href="../forgebuild.html#forgebuild.resize_images">[docs]</a>
 <span class="k">def</span> <span class="nf">resize_images</span><span class="p">(</span><span class="n">resolution</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Resizes scene images according to the specified resolution.</span>
@@ -115,7 +115,7 @@
 
 
 <div class="viewcode-block" id="compile_bootloader">
-<a class="viewcode-back" href="../build.html#build.compile_bootloader">[docs]</a>
+<a class="viewcode-back" href="../forgebuild.html#forgebuild.compile_bootloader">[docs]</a>
 <span class="k">def</span> <span class="nf">compile_bootloader</span><span class="p">(</span><span class="n">platform_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compiles the bootloader for the specific platform.</span>
@@ -147,7 +147,7 @@
 
 
 <div class="viewcode-block" id="extract_scenes">
-<a class="viewcode-back" href="../build.html#build.extract_scenes">[docs]</a>
+<a class="viewcode-back" href="../forgebuild.html#forgebuild.extract_scenes">[docs]</a>
 <span class="k">def</span> <span class="nf">extract_scenes</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extracts scenes, mentioned choices, and mentioned scenes from the specified file.</span>
@@ -177,7 +177,7 @@
 
     
 <div class="viewcode-block" id="print_warning">
-<a class="viewcode-back" href="../build.html#build.print_warning">[docs]</a>
+<a class="viewcode-back" href="../forgebuild.html#forgebuild.print_warning">[docs]</a>
 <span class="k">def</span> <span class="nf">print_warning</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Prints a warning message with orange color in the terminal.</span>
@@ -198,7 +198,7 @@
 
 
 <div class="viewcode-block" id="build">
-<a class="viewcode-back" href="../build.html#build.build">[docs]</a>
+<a class="viewcode-back" href="../forgebuild.html#forgebuild.build">[docs]</a>
 <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="n">platform</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">resolutions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">languages</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Builds the project for the specified platforms, resolutions, and languages.</span>
