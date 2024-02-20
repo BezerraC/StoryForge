@@ -1,7 +1,7 @@
 # Hi! This is the StoryForge example game. 
 
-from core.story import Story
-from core.ui import PygameUI
+from storyforge.story import Story
+from storyforge.ui import PygameUI
 
 # Input your start scene name below.
 story = Story("start")
