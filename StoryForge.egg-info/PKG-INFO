@@ -1,0 +1,20 @@
+Metadata-Version: 2.1
+Name: StoryForge
+Version: 0.0.1
+Summary: Engine to create interactive stories
+Author: BezerraC
+Author-email: <cbezerraneto@gmail.com>
+Project-URL: Documentation, https://storyforge.readthedocs.io/en/latest/
+Project-URL: Source, https://github.com/BezerraC/StoryForge
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Developers
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Utilities
+Description-Content-Type: text/markdown
+Requires-Dist: pillow
+Requires-Dist: pygame
+Requires-Dist: pyinstaller
+Requires-Dist: Sphinx
+Requires-Dist: sphinx-rtd-theme
+
+StoryForge allows users to create and play their own interactive stories. Players can make decisions that affect the course of the story, providing an engaging and personalized experience.

@@ -1,0 +1,2 @@
+[console_scripts]
+StoryForge = storyforge.ui:PygameUI.welcome

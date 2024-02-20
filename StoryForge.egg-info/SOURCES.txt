@@ -1,0 +1,16 @@
+README.md
+setup.py
+StoryForge.egg-info/PKG-INFO
+StoryForge.egg-info/SOURCES.txt
+StoryForge.egg-info/dependency_links.txt
+StoryForge.egg-info/entry_points.txt
+StoryForge.egg-info/requires.txt
+StoryForge.egg-info/top_level.txt
+storyforge/__init__.py
+storyforge/menu.py
+storyforge/story.py
+storyforge/ui.py
+tests/__init__.py
+tests/testMenu.py
+tests/testStory.py
+tests/testUi.py
