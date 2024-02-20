@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 import unittest
 from typing import Tuple
 from unittest.mock import patch, MagicMock, ANY
-from core.ui import *
+from storyforge.ui import *
 import pygame
 
 
@@ -206,7 +206,7 @@ class PygameUITestCase(unittest.TestCase):
         # Assertions
         self.assertIsInstance(returned_rect, pygame.Rect)
         
-    @patch('core.ui.pygame.event.get')
+    @patch('storyforge.ui.pygame.event.get')
     def test_wait_for_click(self, mock_event_get):
         # Setting up the mock for pygame event
         mock_event = MagicMock()
@@ -222,8 +222,8 @@ class PygameUITestCase(unittest.TestCase):
         mock_event_get.assert_called_with()  # Ensure pygame.event.get is called
         self.assertTrue(mock_event_get.call_count >= 2)  # Ensure pygame.event.get is called at least twice
 
-    @patch('core.ui.pygame.mouse')
-    @patch('core.ui.PygameUI.render_choice')
+    @patch('storyforge.ui.pygame.mouse')
+    @patch('storyforge.ui.PygameUI.render_choice')
     def test_show_choices(self, mock_render_choice, mock_mouse):
         # Mocking necessary objects
         ui = PygameUI(MagicMock())  # Mocking the Story object

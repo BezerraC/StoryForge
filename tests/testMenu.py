@@ -4,7 +4,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) 
 import unittest
 from unittest.mock import MagicMock, patch
-from core.menu import StoryMenu
+from storyforge.menu import StoryMenu
 
 
 class TestStoryMenu(unittest.TestCase):
@@ -16,7 +16,7 @@ class TestStoryMenu(unittest.TestCase):
 
     def test_show_menu(self):
         # Test whether show_menu method runs without errors
-        with patch("core.menu.pygame") as mock_pygame:
+        with patch("storyforge.menu.pygame") as mock_pygame:
             # Mocking clock object
             mock_pygame.time.Clock.return_value = MagicMock()
             # Mocking pygame.MOUSEBUTTONDOWN event
