@@ -8,6 +8,7 @@ import platform
 import shutil
 import subprocess
 from typing import List, Set, Tuple
+
 from PIL import Image
 
 
@@ -112,7 +113,7 @@ def print_warning(message: str) -> None:
     print(f"{orange_color_code}Warning: {message}{reset_color_code}")
 
 
-def build(platform: str, resolutions: List[str], languages: List[str]) -> None:
+def build(platform: str, resolutions: List[str], languages: List[str], history_file) -> None:
     """
     Builds the project for the specified platforms, resolutions, and languages.
 
@@ -120,17 +121,18 @@ def build(platform: str, resolutions: List[str], languages: List[str]) -> None:
         - platform (str): The target platform for the build ('windows' or 'linux').
         - resolutions (List[str]): The resolutions to build to ('hd', 'fullhd' or '4k').
         - languages (List[str]): The languages to build for ('en' or 'pt').
+        - history_file (str): The name of the file containing the story.
 
     Return:
         None
     """
 
     # Get the path of the history file (example.py) file
-    example_py_path = "example.py" 
+    history_path =  os.path.join(os.getcwd(), history_file)
     current_dir = os.getcwd()  # Get current directory
 
     # Extract the scenes from the example.py file
-    mentioned_scenes, mentioned_choices, defined_scenes = extract_scenes(example_py_path)
+    mentioned_scenes, mentioned_choices, defined_scenes = extract_scenes(history_path)
 
     # Add the scenes mentioned in the choices to the defined scenes
     defined_scenes.update(mentioned_choices)
@@ -154,7 +156,7 @@ def build(platform: str, resolutions: List[str], languages: List[str]) -> None:
             resize_images(resolution)
             
             # Build the executable using PyInstaller and specify the bootloader to use
-            subprocess.run(["pyinstaller", "example.py", "--onefile"])
+            subprocess.run(["pyinstaller", history_file, "--onefile"])
 
             # Change working directory to 'dist' directory
             os.chdir(os.path.join(current_dir, "dist"))
@@ -166,11 +168,12 @@ def build(platform: str, resolutions: List[str], languages: List[str]) -> None:
 if __name__ == "__main__":
     # Configure command-line argument parsing
     parser = argparse.ArgumentParser(description="Build script for pygame project")
+    parser.add_argument("--history-file", help="Name of the file containing the story")
     parser.add_argument("--platform", choices=["windows", "linux"], help="Platform to build on")
     parser.add_argument("--resolution", nargs="+", choices=["hd", "fullhd", "4k"], help="Resolutions to build towards")
-    #parser.add_argument("--language", nargs="+", choices=["en", "pt"], help="Languages to build for")
+    parser.add_argument("--language", nargs="+", choices=["en", "pt"], help="Languages to build for")
 
     args = parser.parse_args()
 
     # Call the construction function with the given arguments
-    build(args.platform, args.resolutions, args.languages)
+    build(args.history_file,args.platform, args.resolution, args.language)
