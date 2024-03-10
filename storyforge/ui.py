@@ -299,7 +299,7 @@ class PygameUI:
 
         elif not self.show_character_speech:
             # If the flag is not activated and there is no character speech, displays the scene's default text
-            self.character_speech_text = ""  # Limpa o texto da fala do personagem
+            self.character_speech_text = ""  # Clears the text of the character's speech
             self.render_text_with_background(scene["text"], 150, bottom_aligned=True, opacity=180)
             self.show_text_displayed = True  # Marks that the scene text has been displayed
         
@@ -500,22 +500,28 @@ class PygameUI:
 
         # Asks the player if they want to save before exiting
         self.render_text("Do you really want to leave?", self.screen.get_width() // 2, 400)
-        rect_sim, _ = self.render_choice("Yes", self.screen.get_width() // 2, 450)
-        rect_nao, _ = self.render_choice("No", self.screen.get_width() // 2, 500)
+
+        choices = ["Yes", "No"]
+        rects = []
+        for idx, choice in enumerate(choices):
+            rect_choice, _ = self.render_choice(choice, self.screen.get_width() // 2, 450 + (idx * 50))
+            rects.append(rect_choice)
+
         pygame.display.flip()
         print("Leaving...")
+
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     # Checks whether the click was on the "Yes" or "No" options
-                    if rect_sim.collidepoint(event.pos):
-                        print("Yes")
-                        self.story.save_state()  # Saves the current state
-                        pygame.quit()
-                        sys.exit()
-                    elif rect_nao.collidepoint(event.pos):
-                        print("No")
-                        pygame.event.clear()  # Clears all events from the pygame event queue
-                        self.close_window = False  # Sets close_window to False
-                        return  # Return to the game without saving
-
+                    for idx, rect in enumerate(rects):
+                        if rect.collidepoint(event.pos):
+                            print(choices[idx])
+                            if choices[idx] == "Yes":
+                                self.story.save_state()  # Saves the current state
+                                pygame.quit()
+                                sys.exit()
+                            elif choices[idx] == "No":
+                                pygame.event.clear()  # Clears all events from the pygame event queue
+                                self.close_window = False  # Sets close_window to False
+                                return  # Return to the game without saving
